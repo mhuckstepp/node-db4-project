@@ -29,21 +29,17 @@ async function getRecipeById(recipe_id) {
           ingredient: ingredient.ingredient,
         };
       });
-
-    return {
-      step_id: step.step_id,
-      step_number: step.step_number,
-      instruction: step.instruction,
-      ingredients: mapStepIngredients,
-    };
+    if (step.step_id) {
+      return {
+        step_id: step.step_id,
+        step_number: step.step_number,
+        instruction: step.instruction,
+        ingredients: mapStepIngredients,
+      };
+    } else {
+      null;
+    }
   });
-
-  let dbresult = await db
-    .select("st.*", "sti.*")
-    .from({ r: "recipes" })
-    .leftJoin({ st: "steps" }, "st.recipe_id", "r.recipe_id")
-    .join({ sti: "step_ingredients" }, "sti.step_id", "st.step_id")
-    .where({ "r.recipe_id": recipe_id });
 
   return {
     recipe_id: recipe.recipe_id,

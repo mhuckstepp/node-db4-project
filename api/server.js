@@ -1,12 +1,9 @@
 const express = require("express");
 const { getRecipeById } = require("./models");
 
-// const RecipesRouter = require('./recipes/recipe-router.js');
-
 const server = express();
 
 server.use(express.json());
-// server.use('/api/recipes', RecipesRouter);
 
 server.get("/api/:id", (req, res, next) => {
   getRecipeById(req.params.id)
@@ -16,6 +13,7 @@ server.get("/api/:id", (req, res, next) => {
     .catch((err) => console.log(err));
 });
 
+// eslint-disable-next-line
 server.use("/", (req, res, next) => {
   console.log("Ping from server");
   res.status(200).json("Ping from server");

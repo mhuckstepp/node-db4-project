@@ -3,6 +3,7 @@ exports.up = function (knex) {
     .createTable("recipes", (tbl) => {
       tbl.increments("recipe_id");
       tbl.string("recipe_name", 128).notNullable().unique();
+      tbl.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
     })
     .createTable("ingredients", (tbl) => {
       tbl.increments("ingredient_id");
@@ -42,8 +43,8 @@ exports.up = function (knex) {
 
 exports.down = function (knex) {
   return knex.schema
+    .dropTableIfExists("ingredient_id")
     .dropTableIfExists("step_ingredients")
     .dropTableIfExists("steps")
-    .dropTableIfExists("ingredients")
     .dropTableIfExists("recipes");
 };
