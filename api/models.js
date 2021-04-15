@@ -1,24 +1,22 @@
 const db = require("../data/knex");
 
 async function getRecipeById(recipe_id) {
-  let recipe = await db
-    .select("r.*")
-    .from({ r: "recipes" })
-    .where({ "r.recipe_id": recipe_id })
-    .first();
-
-  let steps = await db
-    .select("st.step_id", "st.step_number", "st.instruction")
-    .from({ r: "recipes" })
-    .leftJoin({ st: "steps" }, "st.recipe_id", "r.recipe_id")
+  let steps = await db("recipes as r")
+    .select(
+      "st.step_id",
+      "st.step_number",
+      "st.instruction",
+      "r.recipe_id",
+      "r.recipe_name"
+    )
+    .leftJoin("steps as st", "st.recipe_id", "r.recipe_id")
     .where({ "r.recipe_id": recipe_id })
     .orderBy("st.step_number");
 
-  let ingredients = await db
+  let ingredients = await db("steps as st")
     .select("st.*", "sti.*", "i.ingredient")
-    .from({ st: "steps" })
-    .leftJoin({ sti: "step_ingredients" }, "sti.step_id", "st.step_id")
-    .join({ i: "ingredients" }, "i.ingredient_id", "sti.ingredient_id");
+    .leftJoin("step_ingredients as sti", "sti.step_id", "st.step_id")
+    .join("ingredients as i", "i.ingredient_id", "sti.ingredient_id");
 
   let mappedSteps = steps.map((step) => {
     let mapStepIngredients = ingredients
@@ -36,14 +34,12 @@ async function getRecipeById(recipe_id) {
         instruction: step.instruction,
         ingredients: mapStepIngredients,
       };
-    } else {
-      null;
     }
   });
 
   return {
-    recipe_id: recipe.recipe_id,
-    recipe_name: recipe.recipe_name,
+    recipe_id: steps[0].recipe_id,
+    recipe_name: steps[0].recipe_name,
     steps: mappedSteps,
   };
 }
