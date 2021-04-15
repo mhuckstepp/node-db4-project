@@ -15,8 +15,7 @@ server.get("/api/:id", (req, res, next) => {
 
 // eslint-disable-next-line
 server.use("/", (req, res, next) => {
-  console.log("Ping from server");
-  res.status(200).json("Ping from server");
+  res.status(200).json("You hit the server");
 });
 
 module.exports = server;
